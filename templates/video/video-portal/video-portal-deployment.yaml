@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "videoportal.fullname" . }}
+  labels:
+    app: {{ template "videoportal.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    type: deployment
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.videoportal.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "videoportal.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        type: deployment
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "videoportal.fullname" . }}
+          image: "{{ .Values.videoportal.image.repository }}:{{ .Values.videoportal.image.tag }}"
+          imagePullPolicy: {{ .Values.videoportal.pullPolicy }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+
+
+  
+{{- end }}
+

@@ -1,0 +1,27 @@
+{{- if and .Values.persistence.vlibrasnfs.enabled (not .Values.persistence.vlibrasnfs.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "vlibrasnfs.fullname" . }}-data
+  labels:
+    app: {{ template "vlibrasnfs.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  {{- if .Values.persistence.vlibrasnfs.hostPath }}
+  storageClassName: ""
+  {{- end }}
+  accessModes:
+    - {{ .Values.persistence.vlibrasnfs.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.vlibrasnfs.size | quote }}
+{{- if and .Values.persistence.vlibrasnfs.storageClass (not .Values.persistence.vlibrasnfs.hostPath) -}}
+{{- if (eq "-" .Values.persistence.vlibrasnfs.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.vlibrasnfs.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end -}}

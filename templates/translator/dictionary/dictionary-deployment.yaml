@@ -1,0 +1,82 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "dictionary.fullname" . }}
+  labels:
+    app: {{ template "dictionary.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    type: deployment
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.dictionary.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "dictionary.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        type: deployment
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "dictionary.fullname" . }}
+          image: "{{ .Values.dictionary.image.repository }}:{{ .Values.dictionary.image.tag }}"
+          imagePullPolicy: {{ .Values.dictionary.pullPolicy }}
+          env:
+            - name: DICTIONARY_REPOSITORY_URL
+              value: {{ default "" .Values.dictionary.config.url | quote }}
+            - name: PORT
+              value: {{  default "" .Values.dictionary.config.port | quote }}
+            - name: LOCAL_DICTIONARY_REPOSITORY
+              value: {{ default "" .Values.dictionary.config.localdir | quote }}
+            - name: SIGNS_LIST_UPDATE_INTERVAL
+              value: {{ default "" .Values.dictionary.config.signsupdateinterval | quote }}
+            - name: DB_HOST
+              value: {{ template "mongodbtranslator.fullname" . }}-client
+            - name: DB_NAME
+              value: {{ default "" .Values.mongodbtranslator.mongodbDatabase | quote }}         
+            - name: DB_PORT
+              value: {{ default "" .Values.mongodbtranslator.port | quote }}
+            - name: DB_USER
+              value: {{ default "" .Values.mongodbtranslator.auth.adminUser | quote }}
+            - name: DB_PASS
+              value: {{ default "" .Values.mongodbtranslator.auth.adminPassword | quote }}
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          resources:
+{{ toYaml .Values.dictionary.resources | indent 12 }}
+          volumeMounts:
+          - name: dictionary-storage
+            mountPath: /src/bundles/
+      volumes:
+        - name: dictionary-storage
+        {{- if .Values.persistence.dictionary.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.dictionary.existingClaim }}{{ .Values.persistence.dictionary.existingClaim }}{{- else }}{{ template "dictionary.fullname" . }}-data{{- end }}
+        {{- else }}
+          emptyDir: {}
+      {{- end -}}
+    {{- with .Values.dictionary.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.dictionary.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.dictionary.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+
+
+  
+{{- end }}
+

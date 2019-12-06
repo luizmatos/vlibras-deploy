@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "translatorapi.fullname" . }}
+  labels:
+    app: {{ template "translatorapi.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.translatorapi.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "translatorapi.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+        selector: {{ .Values.slot }}
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "translatorapi.fullname" . }}
+          image: "{{ .Values.translatorapi.image.repository }}:{{ .Values.translatorapi.image.tag }}"
+          imagePullPolicy: {{ .Values.translatorapi.pullPolicy }}
+          env:
+            - name: PORT
+              value: {{ default "" .Values.translatorapi.config.port | quote }}
+            - name: AMQP_HOST
+              value: {{ template "rabbitmqha.fullname" . }}
+            - name: AMQP_PORT
+              value: {{ default "" .Values.rabbitmqha.port | quote }}
+            - name: AMQP_USER
+              value: {{ default "" .Values.rabbitmqha.rabbitmqUsername | quote }}
+            - name: AMQP_PASS
+              value: {{ default "" .Values.rabbitmqha.rabbitmqPassword | quote }}
+            - name: AMQP_PREFETCH_COUNT
+              value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
+            - name: DB_HOST
+              value: {{ template "mongodbtranslator.fullname" . }}
+            - name: DB_USER
+              value: {{ default "" .Values.mongodbtranslator.auth.adminUser | quote }}
+            - name: DB_NAME
+              value: {{ default "" .Values.mongodbtranslator.mongodbDatabase | quote }}           
+            - name: DB_PORT
+              value: {{ default "" .Values.mongodbtranslator.port | quote }}
+            - name: DB_PASS
+              value: {{ default "" .Values.mongodbtranslator.auth.adminPassword | quote }}              
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 120
+          volumeMounts:
+          - name: video-nfs
+            mountPath: /video/
+      volumes:
+        - name: video-nfs
+        {{- if .Values.persistence.vlibrasnfs.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.vlibrasnfs.existingClaim }}{{ .Values.persistence.vlibrasnfs.existingClaim }}{{- else }}{{ template "vlibrasnfs.fullname" . }}-data{{- end }}
+        {{- else }}
+          emptyDir: {}
+      {{- end -}}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

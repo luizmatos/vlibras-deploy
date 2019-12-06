@@ -1,0 +1,379 @@
+# Default values for deployment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+ 
+gateway:
+  url:
+    widget: widget-pprd.vlibras.gov.br
+    translatorapi: traducao2-pprd.vlibras.gov.br
+    translatortext: traducao2text-pprd.vlibras.gov.br
+    translatorvideo: traducao2video-pprd.vlibras.gov.br
+    dictionary: dicionario2-pprd.vlibras.gov.br
+    staticserver: static-pprd.vlibras.gov.br
+    videoapi: videoapi-pprd.vlibras.gov.br
+    videoportal: videoportal-pprd.vlibras.gov.br
+    videomixer: videomixer-pprd.vlibras.gov.br
+    
+global:
+  video:
+    config:
+      vlibrasdictionary: "/video/bundles/"
+      vlibrasfiles: "/video/uploads/"
+      corequeue: "videomaker"
+      
+###############################################################################
+dictionary:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/dictionary-api
+    tag: 2.1.0
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    url: "http://sinais.vlibras.lavid.ufpb.br"
+    localdir: "/src/bundles/"
+    port: 80
+    signsupdateinterval: "3600000"
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+staticserver:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/statistic-api
+    tag: 0.0.2
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+translatorapi:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/translator-api
+    tag: prod0.2
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  
+translatortext:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/translator-text
+    tag: cogroo-stabilize03
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+translatorvideo:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/translator-video
+    tag: 1.0.7
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+###############################################################################
+
+videoapi:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/video-api-teste
+    tag: 13
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+    loginunico:
+      baseurl: "https://loginunico.gov.br"
+      client: "client.vlibras.gov"
+      secret: "loginsecret"
+    uploadpath: "/video/uploads/"
+    generationtimeout: 40000000
+
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+     
+videoportal:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/video-portal-teste
+    tag: "03"
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+    
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  
+videomixer:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/video-mixer-teste
+    tag: 10
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+    
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+videocore:
+  enabled: true
+  replicas: 1
+  image:
+    repository: vlibras/video-core-teste
+    tag: "03"
+  pullPolicy: "IfNotPresent"
+  
+  # Application's environment variables
+  config:
+    port: 80
+    
+  resources: {}
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+###############################################################################
+
+rabbitmqha:
+  enabled: true
+  port: 5672
+  rabbitmqUsername: vlibras
+  rabbitmqPassword: vlibraschangeme
+  prefetchCount: 1
+  persistentVolume:
+    size: 20Gi
+    enabled: true
+  rabbitmqVhost: "/"
+  definitions:
+    policies: '{"vhost":"/","name":"ha","pattern":"", "definition":{"ha-mode":"all","ha-sync-mode":"automatic","ha-sync-batch-size":10}}'
+
+mongodbtranslator:
+  enabled: true
+  port: 27017
+  mongodbDatabase: vlibras-translator-db
+  auth:
+    enabled: false
+  persistentVolume:
+    size: 30Gi
+
+mongodbvideo:
+  enabled: true
+  port: 27017
+  mongodbDatabase: vlibras-video-db
+  auth:
+    enabled: true
+    adminUser: "vlibras"
+    adminPassword: "changemevlibras"
+    key: "lasjkO27AhbVnoLPeaCbbEuweEA"
+  persistentVolume:
+    size: 30Gi
+
+
+redis:
+  redisPassword: "vlibras"
+  redisPort: 6379
+  redisFamily: 4
+  redisDbIndex: 0
+  resources:
+    requests:
+      memory: 1Gi
+
+  persistence:
+    size: 10Gi
+
+nfs-server-provisioner:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: quay.io/kubernetes_incubator/nfs-provisioner
+    tag: v2.2.1-k8s1.12
+    pullPolicy: IfNotPresent
+
+  persistence:
+    enabled: true
+    storageClass: "default"
+    size: 300Gi
+
+  ## For RBAC support:
+  rbac:
+    create: true
+
+###############################################################################
+
+persistence:
+  ## A manually managed Persistent Volume and Claim
+  vlibrasnfs:
+    enabled: true
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    storageClass: "nfs"
+    accessMode: ReadWriteMany
+    size: 150Gi
+
+    ## A manually managed Persistent Volume Claim
+    ## Requires persistence.enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    ##
+    # existingClaim:
+
+    ## If defined, the drupal-data volume will mount to the specified hostPath.
+    ## Requires persistence.enabled: true
+    ## Requires persistence.existingClaim: nil|false
+    ## Default: nil.
+    ##
+    # hostPath:
+    
+  dictionary:
+    enabled: true
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    accessMode: ReadWriteOnce
+    size: 75Gi
+
+    ## A manually managed Persistent Volume Claim
+    ## Requires persistence.enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    ##
+    # existingClaim:
+
+    ## If defined, the drupal-data volume will mount to the specified hostPath.
+    ## Requires persistence.enabled: true
+    ## Requires persistence.existingClaim: nil|false
+    ## Default: nil.
+    ##
+    # hostPath:
+    
+###############################################################################
+
+  
+## Enable liveness and readiness probes
+probesEnabled: true
+
+service:
+  type: ClusterIP	

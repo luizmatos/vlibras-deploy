@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "videoapi.fullname" . }}-gateway
+spec:
+  hosts:
+  - "{{.Values.gateway.url.videoapi}}"
+  gateways:
+  - public-gateway.istio-system.svc.cluster.local
+  http:
+  - route:
+    - destination:
+        host: {{ template "videoapi.fullname" . }}.{{.Release.Namespace}}.svc.cluster.local
+        port:
+            number: {{ default "" .Values.videoapi.config.port | quote }}
+    #timeout: 30s

@@ -1,0 +1,97 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "videoapi.fullname" . }}
+  labels:
+    app: {{ template "videoapi.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.videoapi.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "videoapi.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+        selector: {{ .Values.slot }}
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "videoapi.fullname" . }}
+          image: "{{ .Values.videoapi.image.repository }}:{{ .Values.videoapi.image.tag }}"
+          imagePullPolicy: {{ .Values.videoapi.pullPolicy }}
+          env:        
+            - name: PORT
+              value: {{ default "" .Values.videoapi.port | quote }}
+            - name: DB_HOST
+              value: {{ template "mongodbvideo.fullname" . }}-client
+            - name: DB_PORT
+              value: {{ default "" .Values.mongodbvideo.port | quote }}
+            - name: DB_NAME
+              value: {{ default "" .Values.mongodbvideo.mongodbDatabase | quote }}
+            - name: DB_USER
+              value: {{ default "" .Values.mongodbvideo.auth.adminUser | quote }}
+            - name: DB_PASS
+              value: {{ default "" .Values.mongodbvideo.auth.adminPassword | quote }}
+            - name: AMQP_HOST
+              value: {{ template "rabbitmqha.fullname" . }}
+            - name: AMQP_PORT
+              value: {{ default "" .Values.rabbitmqha.port | quote }}
+            - name: AMQP_USER
+              value: {{ default "" .Values.rabbitmqha.rabbitmqUsername | quote }}
+            - name: AMQP_PASS
+              value: {{ default "" .Values.rabbitmqha.rabbitmqPassword | quote }}
+            - name: AMQP_PREFETCH_COUNT
+              value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
+            - name: REDIS_HOST
+              value: {{ template "redis.fullname" . }}
+            - name: REDIS_PORT
+              value: {{ default "" .Values.redis.redisPort | quote }}
+            - name: REDIS_FAMILY
+              value: {{ default "" .Values.redis.redisFamily | quote }}
+            - name: REDIS_PASSWORD
+              value: {{ default "" .Values.redis.redisPassword | quote }}
+            - name: REDIS_DB_INDEX
+              value: {{ default "" .Values.redis.redisDbIndex | quote }}
+            - name: CORE_QUEUE
+              value: {{ default "" .Values.global.video.config.corequeue | quote }}
+            - name: LOGIN_UNICO_BASE_URL
+              value: {{ default "" .Values.videoapi.config.loginunico.baseurl | quote }}
+            - name: LOGIN_UNICO_CLIENT
+              value: {{ default "" .Values.videoapi.config.loginunico.client | quote }}
+            - name: LOGIN_UNICO_SECRET
+              value: {{ default "" .Values.videoapi.config.loginunico.secret | quote }}
+            - name: PATH_UPLOAD
+              value: {{ default "" .Values.videoapi.config.uploadpath | quote }}
+            - name: GENERATION_TIME_OUT
+              value: {{ default "" .Values.videoapi.config.generationtimeout | quote }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+          - name: video-nfs
+            mountPath: /video/
+      volumes:
+        - name: video-nfs
+        {{- if .Values.persistence.vlibrasnfs.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.vlibrasnfs.existingClaim }}{{ .Values.persistence.vlibrasnfs.existingClaim }}{{- else }}{{ template "vlibrasnfs.fullname" . }}-data{{- end }}
+        {{- else }}
+          emptyDir: {}
+      {{- end -}}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

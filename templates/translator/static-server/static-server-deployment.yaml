@@ -1,0 +1,66 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "staticserver.fullname" . }}
+  labels:
+    app: {{ template "staticserver.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    type: deployment
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.staticserver.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "staticserver.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        type: deployment
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+        slot: {{ .Values.slot }} 
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "staticserver.fullname" . }}
+          image: "{{ .Values.staticserver.image.repository }}:{{ .Values.staticserver.image.tag }}"
+          imagePullPolicy: {{ .Values.staticserver.pullPolicy }}
+          env:
+            - name: PORT
+              value: {{ default "" .Values.staticserver.config.port | quote }}
+            - name: DB_HOST
+              value: {{ template "mongodbtranslator.fullname" . }}-client
+            - name: DB_USER
+              value: {{ default "" .Values.mongodbtranslator.auth.adminUser | quote }}
+            - name: DB_NAME
+              value: {{ default "" .Values.mongodbtranslator.mongodbtranslatorDatabase | quote }}        
+            - name: DB_PORT
+              value: {{ default "" .Values.mongodbtranslator.port | quote }}
+            - name: DB_PASS
+              value: {{ default "" .Values.mongodbtranslator.auth.adminPassword | quote }}
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+
+
+  
+{{- end }}
+

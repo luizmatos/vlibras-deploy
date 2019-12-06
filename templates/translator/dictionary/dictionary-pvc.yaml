@@ -1,0 +1,27 @@
+{{- if and .Values.persistence.dictionary.enabled (not .Values.persistence.dictionary.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "dictionary.fullname" . }}-data
+  labels:
+    app: {{ template "dictionary.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  {{- if .Values.persistence.dictionary.hostPath }}
+  storageClassName: ""
+  {{- end }}
+  accessModes:
+    - {{ .Values.persistence.dictionary.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.dictionary.size | quote }}
+{{- if and .Values.persistence.dictionary.storageClass (not .Values.persistence.dictionary.hostPath) -}}
+{{- if (eq "-" .Values.persistence.dictionary.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistence.dictionary.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end -}}

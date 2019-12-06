@@ -1,0 +1,21 @@
+dependencies:
+- name: mongodb-replicaset
+  version: 3.10.3
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: mongodbtranslator.enabled
+  alias: mongodbtranslator
+- name: mongodb-replicaset
+  version: 3.10.3
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: mongodbvideo.enabled
+  alias: mongodbvideo
+- name: nfs-server-provisioner
+  version: 0.3.0
+  repository: https://kubernetes-charts.storage.googleapis.com/
+- name: rabbitmq-ha
+  version: 1.36.4
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  condition: rabbitmqha.enabled
+- name: redis
+  version: 10.2.0
+  repository: https://kubernetes-charts.storage.googleapis.com/

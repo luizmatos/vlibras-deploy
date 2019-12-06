@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "translatortext.fullname" . }}
+  labels:
+    app: {{ template "translatortext.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.translatortext.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "translatortext.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+        selector: {{ .Values.slot }}
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "translatortext.fullname" . }}
+          image: "{{ .Values.translatortext.image.repository }}:{{ .Values.translatortext.image.tag }}"
+          imagePullPolicy: {{ .Values.translatortext.pullPolicy }}
+          env:
+            - name: AMQP_HOST
+              value: {{ template "rabbitmqha.fullname" . }}
+            - name: AMQP_PORT
+              value: {{ default "" .Values.rabbitmqha.port | quote }}
+            - name: AMQP_USER
+              value: {{ default "" .Values.rabbitmqha.rabbitmqUsername | quote }}
+            - name: AMQP_PASS
+              value: {{ default "" .Values.rabbitmqha.rabbitmqPassword | quote }}
+            - name: AMQP_PREFETCH_COUNT
+              value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - timeout 20 python /translator-text-worker/core/utils/translatorhc.py
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            failureThreshold: 1
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

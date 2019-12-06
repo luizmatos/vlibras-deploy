@@ -1,0 +1,84 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "videomixer.fullname" . }}
+  labels:
+    app: {{ template "videomixer.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    type: deployment
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: {{ .Values.videomixer.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "videomixer.fullname" . }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        type: deployment
+        release: "{{ .Release.Name }}"
+        heritage: "{{ .Release.Service }}"
+      annotations: 
+    spec:
+      imagePullSecrets:
+        - name: registrynuvem
+      containers:
+        - name: {{ template "videomixer.fullname" . }}
+          image: "{{ .Values.videomixer.image.repository }}:{{ .Values.videomixer.image.tag }}"
+          imagePullPolicy: {{ .Values.videomixer.pullPolicy }}
+          env:
+            - name: DB_HOST
+              value: {{ template "mongodbvideo.fullname" . }}-client
+            - name: DB_PORT
+              value: {{ default "" .Values.mongodbvideo.port | quote }}
+            - name: DB_NAME
+              value: {{ default "" .Values.mongodbvideo.mongodbDatabase | quote }}
+            - name: DB_USER
+              value: {{ default "" .Values.mongodbvideo.auth.adminUser | quote }}
+            - name: DB_PASS
+              value: {{ default "" .Values.mongodbvideo.auth.adminPassword | quote }}
+            - name: AMQP_HOST
+              value: {{ template "rabbitmqha.fullname" . }}
+            - name: AMQP_PORT
+              value: {{ default "" .Values.rabbitmqha.port | quote }}
+            - name: AMQP_USER
+              value: {{ default "" .Values.rabbitmqha.rabbitmqUsername | quote }}
+            - name: AMQP_PASS
+              value: {{ default "" .Values.rabbitmqha.rabbitmqPassword | quote }}
+            - name: AMQP_PREFETCH_COUNT
+              value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
+            - name: CORE_QUEUE
+              value: {{ default "" .Values.global.video.config.corequeue | quote }}
+            - name: VLIBRAS_FILES
+              value: {{ default "" .Values.global.video.config.vlibrasfiles | quote }}
+            - name: VLIBRAS_DICTIONARY
+              value: {{ default "" .Values.global.video.config.vlibrasdictionary | quote }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+          - name: video-nfs
+            mountPath: /video/
+      volumes:
+        - name: video-nfs
+        {{- if .Values.persistence.vlibrasnfs.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.vlibrasnfs.existingClaim }}{{ .Values.persistence.vlibrasnfs.existingClaim }}{{- else }}{{ template "vlibrasnfs.fullname" . }}-data{{- end }}
+        {{- else }}
+          emptyDir: {}
+      {{- end -}}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+
+
+  
+{{- end }}
+
