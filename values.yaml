@@ -4,16 +4,12 @@
  
 gateway:
   url:
-    widget: widget-pprd.vlibras.gov.br
-    translatorapi: traducao2-pprd.vlibras.gov.br
-    translatortext: traducao2text-pprd.vlibras.gov.br
-    translatorvideo: traducao2video-pprd.vlibras.gov.br
-    dictionary: dicionario2-pprd.vlibras.gov.br
-    staticserver: static-pprd.vlibras.gov.br
     videoapi: videoapi-pprd.vlibras.gov.br
     videoportal: videoportal-pprd.vlibras.gov.br
-    videomixer: videomixer-pprd.vlibras.gov.br
-    
+    dictionary: dicionario-pprd.vlibras.gov.br
+    staticserver: static-pprd.vlibras.gov.br
+    translatorapi: traducao-pprd.vlibras.gov.br
+   
 global:
   video:
     config:
