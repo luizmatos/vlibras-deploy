@@ -353,7 +353,7 @@ persistence:
     ##   GKE, AWS & OpenStack)
     ##
     # storageClass: "-"
-    accessMode: ReadWriteOnce
+    accessMode: ReadWriteMany
     size: 75Gi
 
     ## A manually managed Persistent Volume Claim
