@@ -71,7 +71,7 @@ spec:
             - name: GENERATION_TIME_OUT
               value: {{ default "" .Values.videoapi.config.generationtimeout | quote }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.videoapi.resources | indent 12 }}
           volumeMounts:
           - name: video-nfs
             mountPath: /video/
@@ -83,15 +83,15 @@ spec:
         {{- else }}
           emptyDir: {}
       {{- end -}}
-    {{- with .Values.nodeSelector }}
+    {{- with .Values.videoapi.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.videoapi.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.videoapi.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}

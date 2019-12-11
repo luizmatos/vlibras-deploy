@@ -54,7 +54,7 @@ spec:
             - name: VLIBRAS_DICTIONARY
               value: {{ default "" .Values.global.video.config.vlibrasdictionary | quote }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.videomixer.resources | indent 12 }}
           volumeMounts:
           - name: video-nfs
             mountPath: /video/
@@ -66,15 +66,15 @@ spec:
         {{- else }}
           emptyDir: {}
       {{- end -}}
-    {{- with .Values.nodeSelector }}
+    {{- with .Values.videomixer.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.videomixer.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.videomixer.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
 

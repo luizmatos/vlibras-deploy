@@ -71,7 +71,7 @@ staticserver:
 
 translatorapi:
   enabled: true
-  replicas: 1
+  #replicas: 3
   image:
     repository: vlibras/translator-api
     tag: prod0.2
@@ -81,13 +81,18 @@ translatorapi:
   config:
     port: 80
 
+  autoscaleEnabled: true
+  autoscaleMin: 3
+  autoscaleMax: 5
+    
   resources:
-    limits:
-     cpu: 2000m
-     memory: 4096Mi
     requests:
-     cpu: 100m
-     memory: 128Mi
+      cpu: 500m
+      memory: 128Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
   cpu:
     targetAverageUtilization: 80
 
@@ -97,7 +102,7 @@ translatorapi:
   
 translatortext:
   enabled: true
-  replicas: 1
+  replicas: 2
   image:
     repository: vlibras/translator-text
     tag: cogroo-stabilize03
@@ -121,7 +126,7 @@ translatortext:
 
 translatorvideo:
   enabled: true
-  replicas: 1
+  replicas: 2
   image:
     repository: vlibras/translator-video
     tag: 1.0.7
@@ -147,7 +152,7 @@ translatorvideo:
 
 videoapi:
   enabled: true
-  replicas: 1
+  replicas: 3
   image:
     repository: vlibras/video-api-teste
     tag: 13
@@ -201,7 +206,7 @@ videoportal:
   
 videomixer:
   enabled: true
-  replicas: 1
+  replicas: 2
   image:
     repository: vlibras/video-mixer-teste
     tag: 10
@@ -225,7 +230,7 @@ videomixer:
 
 videocore:
   enabled: true
-  replicas: 1
+  replicas: 3
   image:
     repository: vlibras/video-core-teste
     tag: "03"

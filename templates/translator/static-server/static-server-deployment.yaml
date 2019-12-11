@@ -47,16 +47,16 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 60
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+{{ toYaml .Values.staticserver.resources | indent 12 }}
+    {{- with .Values.staticserver.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.staticserver.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.staticserver.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
 

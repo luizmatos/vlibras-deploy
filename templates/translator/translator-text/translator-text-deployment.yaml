@@ -37,7 +37,7 @@ spec:
             - name: AMQP_PREFETCH_COUNT
               value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.translatortext.resources | indent 12 }}
           livenessProbe:
             exec:
               command:
@@ -47,15 +47,15 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 60
             failureThreshold: 1
-    {{- with .Values.nodeSelector }}
+    {{- with .Values.translatortext.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.translatortext.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.translatortext.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}

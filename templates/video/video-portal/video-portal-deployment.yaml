@@ -27,16 +27,16 @@ spec:
           image: "{{ .Values.videoportal.image.repository }}:{{ .Values.videoportal.image.tag }}"
           imagePullPolicy: {{ .Values.videoportal.pullPolicy }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
+{{ toYaml .Values.videoportal.resources | indent 12 }}
+    {{- with .Values.videoportal.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.videoportal.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.videoportal.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
 

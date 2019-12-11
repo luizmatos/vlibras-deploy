@@ -51,7 +51,7 @@ spec:
             - name: VLIBRAS_FILES
               value: /video/
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.translatorvideo.resources | indent 12 }}
           volumeMounts:
           - name: video-nfs
             mountPath: /video/
@@ -63,15 +63,15 @@ spec:
         {{- else }}
           emptyDir: {}
       {{- end -}}
-    {{- with .Values.nodeSelector }}
+    {{- with .Values.translatorvideo.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.translatorvideo.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.translatorvideo.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
