@@ -16,6 +16,7 @@ dependencies:
   version: 1.36.4
   repository: https://kubernetes-charts.storage.googleapis.com/
   condition: rabbitmqha.enabled
+  alias: rabbitmqha
 - name: redis
   version: 10.2.0
   repository: https://kubernetes-charts.storage.googleapis.com/

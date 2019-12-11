@@ -38,7 +38,7 @@ spec:
             - name: DB_PASS
               value: {{ default "" .Values.mongodbvideo.auth.adminPassword | quote }}
             - name: AMQP_HOST
-              value: {{ template "rabbitmqha.fullname" . }}
+              value: {{ template "rabbitmqha.fullname" . }}-discovery
             - name: AMQP_PORT
               value: {{ default "" .Values.rabbitmqha.port | quote }}
             - name: AMQP_USER

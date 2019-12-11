@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: {{ .Values.translatorvideo.pullPolicy }}
           env:
             - name: AMQP_HOST
-              value: {{ template "rabbitmqha.fullname" . }}
+              value: {{ template "rabbitmqha.fullname" . }}-discovery
             - name: AMQP_PORT
               value: {{ default "" .Values.rabbitmqha.port | quote }}
             - name: AMQP_USER

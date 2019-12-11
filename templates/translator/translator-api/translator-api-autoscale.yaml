@@ -1,0 +1,23 @@
+{{- if and .Values.translatorapi.autoscaleEnabled .Values.translatorapi.autoscaleMin .Values.translatorapi.autoscaleMax }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "translatorapi.fullname" . }}-autoscale
+  labels:
+    app: {{ template "translatorapi.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  maxReplicas: {{ .Values.translatorapi.autoscaleMax }}
+  minReplicas: {{ .Values.translatorapi.autoscaleMin }}
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: {{ template "translatorapi.fullname" . }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.translatorapi.cpu.targetAverageUtilization }}
+{{- end }}

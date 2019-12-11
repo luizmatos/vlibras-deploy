@@ -27,7 +27,7 @@ spec:
           imagePullPolicy: {{ .Values.videoapi.pullPolicy }}
           env:        
             - name: PORT
-              value: {{ default "" .Values.videoapi.port | quote }}
+              value: {{ default "" .Values.videoapi.config.port | quote }}
             - name: DB_HOST
               value: {{ template "mongodbvideo.fullname" . }}-client
             - name: DB_PORT
@@ -39,7 +39,7 @@ spec:
             - name: DB_PASS
               value: {{ default "" .Values.mongodbvideo.auth.adminPassword | quote }}
             - name: AMQP_HOST
-              value: {{ template "rabbitmqha.fullname" . }}
+              value: {{ template "rabbitmqha.fullname" . }}-discovery
             - name: AMQP_PORT
               value: {{ default "" .Values.rabbitmqha.port | quote }}
             - name: AMQP_USER
@@ -49,13 +49,13 @@ spec:
             - name: AMQP_PREFETCH_COUNT
               value: {{ default "" .Values.rabbitmqha.prefetchCount | quote }}
             - name: REDIS_HOST
-              value: {{ template "redis.fullname" . }}
+              value: {{ template "redis.fullname" . }}-slave
             - name: REDIS_PORT
               value: {{ default "" .Values.redis.redisPort | quote }}
             - name: REDIS_FAMILY
               value: {{ default "" .Values.redis.redisFamily | quote }}
             - name: REDIS_PASSWORD
-              value: {{ default "" .Values.redis.redisPassword | quote }}
+              value: {{ default "" .Values.redis.password | quote }}
             - name: REDIS_DB_INDEX
               value: {{ default "" .Values.redis.redisDbIndex | quote }}
             - name: CORE_QUEUE

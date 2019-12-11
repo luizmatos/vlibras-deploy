@@ -6,9 +6,9 @@ gateway:
   url:
     videoapi: videoapi-pprd.vlibras.gov.br
     videoportal: videoportal-pprd.vlibras.gov.br
-    dictionary: dicionario-pprd.vlibras.gov.br
+    dictionary: dicionario2.vlibras.gov.br
     staticserver: static-pprd.vlibras.gov.br
-    translatorapi: traducao-pprd.vlibras.gov.br
+    translatorapi: traducao2.vlibras.gov.br
    
 global:
   video:
@@ -81,13 +81,15 @@ translatorapi:
   config:
     port: 80
 
-  resources: {}
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
+  resources:
+    limits:
+     cpu: 2000m
+     memory: 4096Mi
+    requests:
+     cpu: 100m
+     memory: 128Mi
+  cpu:
+    targetAverageUtilization: 80
 
   nodeSelector: {}
   tolerations: []
@@ -159,7 +161,7 @@ videoapi:
       client: "client.vlibras.gov"
       secret: "loginsecret"
     uploadpath: "/video/uploads/"
-    generationtimeout: 40000000
+    generationtimeout: "40000000"
 
   resources: {}
     # limits:
@@ -283,10 +285,10 @@ mongodbvideo:
 
 
 redis:
-  redisPassword: "vlibras"
+  password: "vlibras"
   redisPort: 6379
-  redisFamily: 4
-  redisDbIndex: 0
+  redisFamily: "4"
+  redisDbIndex: "0"
   resources:
     requests:
       memory: 1Gi
@@ -305,7 +307,7 @@ nfs-server-provisioner:
   persistence:
     enabled: true
     storageClass: "default"
-    size: 300Gi
+    size: 210Gi
 
   ## For RBAC support:
   rbac:
@@ -325,7 +327,7 @@ persistence:
     ##
     storageClass: "nfs"
     accessMode: ReadWriteMany
-    size: 150Gi
+    size: 200Gi
 
     ## A manually managed Persistent Volume Claim
     ## Requires persistence.enabled: true
@@ -349,8 +351,8 @@ persistence:
     ##   GKE, AWS & OpenStack)
     ##
     # storageClass: "-"
-    accessMode: ReadWriteMany
-    size: 75Gi
+    accessMode: ReadWriteOnce
+    size: 100Gi
 
     ## A manually managed Persistent Volume Claim
     ## Requires persistence.enabled: true
